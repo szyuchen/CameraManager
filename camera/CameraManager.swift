@@ -221,7 +221,7 @@ open class CameraManager: NSObject, AVCaptureFileOutputRecordingDelegate, UIGest
     
     fileprivate var zoomScale       = CGFloat(1.0)
     fileprivate var beginZoomScale  = CGFloat(1.0)
-    fileprivate var maxZoomScale    = CGFloat(1.0)
+    open var maxZoomScale    = CGFloat(1.0)
     
     fileprivate func _tempFilePath() -> URL {
         let tempURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("tempMovie\(Date().timeIntervalSince1970)").appendingPathExtension("mp4")
@@ -917,7 +917,7 @@ open class CameraManager: NSObject, AVCaptureFileOutputRecordingDelegate, UIGest
             maxZoom = frontCameraDevice.activeFormat.videoMaxZoomFactor
         }
         
-        maxZoomScale = maxZoom
+        maxZoomScale = min(maxZoom, 16)
     }
     
     fileprivate func _checkIfCameraIsAvailable() -> CameraState {
