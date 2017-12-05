@@ -820,7 +820,9 @@ open class CameraManager: NSObject, AVCaptureFileOutputRecordingDelegate, UIGest
             if !shouldKeepViewAtOrientationChanges {
                 if let validPreviewLayerConnection = validPreviewLayer.connection {
                     if validPreviewLayerConnection.isVideoOrientationSupported {
-                        validPreviewLayerConnection.videoOrientation = _currentVideoOrientation()
+                        DispatchQueue.main.async { [weak validPreviewLayerConnection] in
+                            validPreviewLayerConnection?.videoOrientation = self._currentApplicationOrientation()
+                        }
                     }
                 }
             }
@@ -845,6 +847,17 @@ open class CameraManager: NSObject, AVCaptureFileOutputRecordingDelegate, UIGest
             return .landscapeRight
         case .landscapeRight:
             return .landscapeLeft
+        default:
+            return .portrait
+        }
+    }
+    
+    fileprivate func _currentApplicationOrientation() -> AVCaptureVideoOrientation {
+        switch UIApplication.shared.statusBarOrientation {
+        case .landscapeLeft:
+            return .landscapeLeft
+        case .landscapeRight:
+            return .landscapeRight
         default:
             return .portrait
         }
