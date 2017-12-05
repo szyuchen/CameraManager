@@ -1273,7 +1273,7 @@ open class CameraManager: NSObject, AVCaptureFileOutputRecordingDelegate, UIGest
                 sessionPreset = AVCaptureSession.Preset.medium
             case CameraOutputQuality.high:
                 if cameraOutputMode == .stillImage {
-                    sessionPreset = AVCaptureSession.Preset.photo
+                    sessionPreset = AVCaptureSession.Preset.hd1920x1080
                 } else {
                     sessionPreset = AVCaptureSession.Preset.high
                 }
