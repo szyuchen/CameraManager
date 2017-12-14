@@ -135,6 +135,7 @@ open class CameraManager: NSObject, AVCaptureFileOutputRecordingDelegate, UIGest
                         _doFlipAnimation()
                     }
                     _updateCameraDevice(cameraDevice)
+                    _updateCameraQualityMode(.high)
                     _updateFlashMode(flashMode)
                     _setupMaxZoomScale()
                     _zoom(0)
@@ -1200,6 +1201,10 @@ open class CameraManager: NSObject, AVCaptureFileOutputRecordingDelegate, UIGest
                 if hasFrontCamera {
                     if let validFrontDevice = _deviceInputFromDevice(frontCameraDevice) {
                         if !inputs.contains(validFrontDevice) {
+                            if !validCaptureSession.canAddInput(validFrontDevice) {
+                                validCaptureSession.sessionPreset = AVCaptureSession.Preset.medium
+                            }
+                            
                             validCaptureSession.addInput(validFrontDevice)
                         }
                     }
@@ -1278,6 +1283,11 @@ open class CameraManager: NSObject, AVCaptureFileOutputRecordingDelegate, UIGest
                     sessionPreset = AVCaptureSession.Preset.high
                 }
             }
+            
+            if !validCaptureSession.canSetSessionPreset(sessionPreset) {
+                sessionPreset = AVCaptureSession.Preset.medium
+            }
+            
             if validCaptureSession.canSetSessionPreset(sessionPreset) {
                 validCaptureSession.beginConfiguration()
                 validCaptureSession.sessionPreset = sessionPreset
