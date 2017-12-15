@@ -264,11 +264,14 @@ open class CameraManager: NSObject, AVCaptureFileOutputRecordingDelegate, UIGest
                 }
             } else {
                 _setupCamera {
-                    self._addPreviewLayerToView(view)
-                    self.cameraOutputMode = newCameraOutputMode
-                    if let validCompletion = completion {
-                        validCompletion()
+                    DispatchQueue.main.async {
+                        self._addPreviewLayerToView(view)
+                        self.cameraOutputMode = newCameraOutputMode
+                        if let validCompletion = completion {
+                            validCompletion()
+                        }
                     }
+                    
                 }
             }
         }
@@ -426,7 +429,7 @@ open class CameraManager: NSObject, AVCaptureFileOutputRecordingDelegate, UIGest
             return
         }
         
-        sessionQueue.async(execute: {
+        DispatchQueue.main.async(execute: {
             let stillImageOutput = self._getStillImageOutput()
             stillImageOutput.captureStillImageAsynchronously(from: stillImageOutput.connection(with: AVMediaType.video)!, completionHandler: { [weak self] sample, error in
                 
