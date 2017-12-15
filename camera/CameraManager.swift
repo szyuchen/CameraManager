@@ -868,6 +868,8 @@ open class CameraManager: NSObject, AVCaptureFileOutputRecordingDelegate, UIGest
         let currentCameraState = _checkIfCameraIsAvailable()
         return currentCameraState == .ready || (currentCameraState == .notDetermined && showAccessPermissionPopupAutomatically)
     }
+    open var dataOutput:AVCaptureVideoDataOutput?
+    public weak var sampleBufferOutputDelegate:AVCaptureVideoDataOutputSampleBufferDelegate? = nil
     
     fileprivate func _setupCamera(_ completion: @escaping () -> Void) {
         captureSession = AVCaptureSession()
@@ -879,6 +881,23 @@ open class CameraManager: NSObject, AVCaptureFileOutputRecordingDelegate, UIGest
                 self._updateCameraDevice(self.cameraDevice)
                 self._setupOutputs()
                 self._setupOutputMode(self.cameraOutputMode, oldCameraOutputMode: nil)
+                
+                
+                
+                self.dataOutput = AVCaptureVideoDataOutput()
+                if let dataOutput = self.dataOutput {
+                    dataOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String : Int(kCVPixelFormatType_32BGRA)]
+                    dataOutput.alwaysDiscardsLateVideoFrames = true
+                    
+                    if (validCaptureSession.canAddOutput(dataOutput) == true) {
+                        validCaptureSession.addOutput(dataOutput)
+                    }
+                    
+                    dataOutput.setSampleBufferDelegate(self.sampleBufferOutputDelegate, queue: self.sessionQueue)
+                }
+                
+                
+                
                 self._setupPreviewLayer()
                 validCaptureSession.commitConfiguration()
                 self._updateFlashMode(self.flashMode)
